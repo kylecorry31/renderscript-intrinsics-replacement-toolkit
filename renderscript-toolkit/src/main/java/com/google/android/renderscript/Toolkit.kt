@@ -1087,6 +1087,57 @@ object Toolkit {
         return outputBitmap
     }
 
+    @JvmOverloads
+    fun threshold(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        threshold: Byte,
+        binary: Boolean,
+        restriction: Range2d? = null
+    ): ByteArray {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName threshold. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("threshold", sizeX, sizeY, restriction)
+
+        val outputArray = ByteArray(inputArray.size)
+        nativeThreshold(
+            nativeHandle,
+            inputArray,
+            outputArray,
+            sizeX,
+            sizeY,
+            threshold,
+            binary,
+            restriction
+        )
+        return outputArray
+    }
+
+    @JvmOverloads
+    fun threshold(
+        inputBitmap: Bitmap,
+        threshold: Byte,
+        binary: Boolean,
+        restriction: Range2d? = null
+    ): Bitmap {
+        validateBitmap("threshold", inputBitmap)
+        validateRestriction("threshold", inputBitmap, restriction)
+
+        val outputBitmap = createCompatibleBitmap(inputBitmap)
+        nativeThresholdBitmap(
+            nativeHandle,
+            inputBitmap,
+            outputBitmap,
+            threshold,
+            binary,
+            restriction
+        )
+        return outputBitmap
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1308,6 +1359,26 @@ object Toolkit {
         sizeY: Int,
         outputBitmap: Bitmap,
         value: Int
+    )
+
+    private external fun nativeThreshold(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        outputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        threshold: Byte,
+        binary: Boolean,
+        restriction: Range2d?
+    )
+
+    private external fun nativeThresholdBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        outputBitmap: Bitmap,
+        threshold: Byte,
+        binary: Boolean,
+        restriction: Range2d?
     )
 }
 

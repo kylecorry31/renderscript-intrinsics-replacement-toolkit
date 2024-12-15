@@ -67,6 +67,7 @@ enum class Intrinsic {
     LUT3D,
     RESIZE,
     YUV_TO_RGB,
+    THRESHOLD,
 }
 
 
@@ -108,6 +109,7 @@ class Tester(context: Context, private val validate: Boolean) {
             Intrinsic.LUT3D -> ::testLut3d
             Intrinsic.RESIZE -> ::testResize
             Intrinsic.YUV_TO_RGB -> ::testYuvToRgb
+            Intrinsic.THRESHOLD -> ::testThreshold
         }.let { test -> test(timer) }
 
     @ExperimentalUnsignedTypes
@@ -918,6 +920,12 @@ class Tester(context: Context, private val validate: Boolean) {
             logArray("Lut3dBitmap intrinsic out", intrinsicOutArray, 64)
             logArray("Lut3dBitmap toolkit   out", toolkitOutArray)
         }
+    }
+
+    @ExperimentalUnsignedTypes
+    private fun testThreshold(timer: TimingTracker): Boolean {
+        // TODO
+        return true
     }
 
     @ExperimentalUnsignedTypes

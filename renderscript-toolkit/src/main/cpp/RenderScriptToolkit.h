@@ -444,6 +444,19 @@ class RenderScriptToolkit {
              const Restriction* _Nullable restriction = nullptr);
 
     /**
+     * Threshold an image (averaging of the RGB channels).
+     * @param input The buffer of the image to be thresholded.
+     * @param output The buffer that receives the thresholded image.
+     * @param sizeX The width of both buffers, as a number of 4 byte cells.
+     * @param sizeY The height of both buffers, as a number of 4 byte cells.
+     * @param threshold The value used to determine if a pixel is black or white.
+     * @param binary If true, the output will be 0 or 255. Otherwise, the pixel will remain the same.
+     * @param restriction When not null, restricts the operation to a 2D range of pixels.
+     */
+    void threshold(const uint8_t* input, uint8_t* output, size_t sizeX, size_t sizeY,
+              uint8_t threshold, bool binary, const Restriction* restriction);
+
+    /**
      * Transform an image using a 3D look up table
      *
      * Transforms an image, converting RGB to RGBA by using a 3D lookup table. The incoming R, G,
