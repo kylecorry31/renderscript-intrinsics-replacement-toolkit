@@ -465,14 +465,26 @@ namespace renderscript {
 
         /**
          * Find the minimum or maximum value in an image.
-         * @param input The buffer of the image to be thresholded.
-         * @param output The buffer that receives the thresholded image.
+         * @param input The buffer of the image.
+         * @param output The buffer that receives the min max.
          * @param sizeX The width of both buffers, as a number of 4 byte cells.
          * @param sizeY The height of both buffers, as a number of 4 byte cells.
          * @param channel The channel to aggregate (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
          * @param restriction When not null, restricts the operation to a 2D range of pixels.
          */
         void minMax(const uint8_t *input, uint8_t *output, size_t sizeX,
+                    size_t sizeY, uint8_t channel, const Restriction *restriction);
+
+        /**
+         * Find the average value of an image.
+         * @param input The buffer of the image.
+         * @param sizeX The width of both buffers, as a number of 4 byte cells.
+         * @param sizeY The height of both buffers, as a number of 4 byte cells.
+         * @param channel The channel to aggregate (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
+         * @param restriction When not null, restricts the operation to a 2D range of pixels.
+         * @return The average value of the image.
+         */
+        double average(const uint8_t *input, size_t sizeX,
                     size_t sizeY, uint8_t channel, const Restriction *restriction);
 
         /**

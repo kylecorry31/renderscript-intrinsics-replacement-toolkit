@@ -89,6 +89,7 @@ add_library(# Sets the name of the library.
             YuvToRgb.cpp
             Threshold.cpp
             MinMax.cpp
+            Average.cpp
             ${ASM_SOURCES})
 
 # Searches for a specified prebuilt library and stores the path as a

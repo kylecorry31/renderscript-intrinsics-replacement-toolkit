@@ -17,7 +17,6 @@
 package com.google.android.renderscript
 
 import android.graphics.Bitmap
-import java.lang.IllegalArgumentException
 
 // This string is used for error messages.
 private const val externalName = "RenderScript Toolkit"
@@ -1185,6 +1184,47 @@ object Toolkit {
         return outputArray
     }
 
+    @JvmOverloads
+    fun average(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): Double {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName average. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("average", sizeX, sizeY, restriction)
+
+        return nativeAverage(
+            nativeHandle,
+            inputArray,
+            sizeX,
+            sizeY,
+            channel,
+            restriction
+        )
+    }
+
+    @JvmOverloads
+    fun average(
+        inputBitmap: Bitmap,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): Double {
+        validateBitmap("average", inputBitmap)
+        validateRestriction("average", inputBitmap, restriction)
+
+        return nativeAverageBitmap(
+            nativeHandle,
+            inputBitmap,
+            channel,
+            restriction
+        )
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1445,6 +1485,22 @@ object Toolkit {
         channel: Byte,
         restriction: Range2d?
     )
+
+    private external fun nativeAverage(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d?
+    ): Double
+
+    private external fun nativeAverageBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        channel: Byte,
+        restriction: Range2d?
+    ): Double
 }
 
 /**
@@ -1634,7 +1690,11 @@ internal fun validateBitmap(
 }
 
 internal fun createCompatibleBitmap(inputBitmap: Bitmap) =
-    Bitmap.createBitmap(inputBitmap.width, inputBitmap.height, inputBitmap.config ?: Bitmap.Config.ARGB_8888)
+    Bitmap.createBitmap(
+        inputBitmap.width,
+        inputBitmap.height,
+        inputBitmap.config ?: Bitmap.Config.ARGB_8888
+    )
 
 internal fun validateHistogramDotCoefficients(
     coefficients: FloatArray?,

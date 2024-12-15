@@ -544,3 +544,25 @@ extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_n
                     restrict.get());
 }
 
+extern "C" JNIEXPORT jdouble JNICALL Java_com_google_android_renderscript_Toolkit_nativeAverage(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jbyteArray input_array, jint size_x,
+        jint size_y, jbyte channel, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    ByteArrayGuard input{env, input_array};
+
+    return toolkit->average(input.get(), size_x, size_y, channel, restrict.get());
+}
+
+extern "C" JNIEXPORT jdouble JNICALL
+Java_com_google_android_renderscript_Toolkit_nativeAverageBitmap(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jobject input_bitmap,
+        jbyte channel, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    BitmapGuard input{env, input_bitmap};
+
+    return toolkit->average(input.get(), input.width(), input.height(), channel, restrict.get());
+}
+
+
