@@ -25,7 +25,7 @@ namespace renderscript {
                   mIn{reinterpret_cast<const uchar4 *>(input)},
                   mChannel{channel},
                   mThreadCount{threadCount},
-                  mTotals(2 * threadCount) {}
+                  mTotals(3 * threadCount) {}
 
         void collate(float *out);
     };
@@ -51,8 +51,9 @@ namespace renderscript {
                     value = (v.r + v.g + v.b) / 3.0;
                 }
 
-                mTotals[threadIndex * 2] += x * value;
-                mTotals[threadIndex * 2 + 1] += y * value;
+                mTotals[threadIndex * 3] += x * value;
+                mTotals[threadIndex * 3 + 1] += y * value;
+                mTotals[threadIndex * 3 + 2] += value;
 
                 in++;
             }
@@ -62,14 +63,23 @@ namespace renderscript {
     void MomentTask::collate(float *out) {
         double momentX = 0;
         double momentY = 0;
+        double total = 0;
         for (uint32_t t = 0; t < mThreadCount; t++) {
-            momentX += mTotals[t * 2];
-            momentY += mTotals[t * 2 + 1];
+            momentX += mTotals[t * 3];
+            momentY += mTotals[t * 3 + 1];
+            total += mTotals[t * 3 + 2];
         }
-        momentX /= mSizeX * mSizeY;
-        momentY /= mSizeX * mSizeY;
-        out[0] = (float)momentX;
-        out[1] = (float)momentY;
+
+        if (total == 0) {
+            out[0] = 0;
+            out[1] = 0;
+            return;
+        }
+
+        momentX /= total;
+        momentY /= total;
+        out[0] = (float) momentX;
+        out[1] = (float) momentY;
     }
 
     void RenderScriptToolkit::moment(const uint8_t *input, float *output, size_t sizeX,
