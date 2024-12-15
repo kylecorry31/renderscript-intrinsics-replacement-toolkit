@@ -41,7 +41,7 @@ namespace renderscript {
             const uchar4 *in = mIn + offset;
             for (size_t x = startX; x < endX; x++) {
                 auto v = *in;
-                uint8_t value;
+                double value;
                 if (mChannel == 0) {
                     value = v.r;
                 } else if (mChannel == 1) {
@@ -51,7 +51,7 @@ namespace renderscript {
                 } else if (mChannel == 3) {
                     value = v.a;
                 } else {
-                    value = (v.r + v.g + v.b) / 3;
+                    value = (v.r + v.g + v.b) / 3.0;
                 }
 
                 double diff = value - mAverage;
@@ -68,7 +68,7 @@ namespace renderscript {
         for (uint32_t t = 0; t < mThreadCount; t++) {
             sum += mTotals[t];
         }
-        return sum / (mSizeX * mSizeY);
+        return sqrt(sum / (mSizeX * mSizeY));
     }
 
     double RenderScriptToolkit::standardDeviation(const uint8_t *input, size_t sizeX,

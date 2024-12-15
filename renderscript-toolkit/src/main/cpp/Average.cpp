@@ -12,7 +12,7 @@ namespace renderscript {
         const uchar4 *mIn;
         const uint8_t mChannel;
         const uint32_t mThreadCount;
-        std::vector<unsigned long long> mTotals;
+        std::vector<double> mTotals;
 
         // Process a 2D tile of the overall work. threadIndex identifies which thread does the work.
         void processData(int threadIndex, size_t startX, size_t startY, size_t endX,
@@ -39,7 +39,7 @@ namespace renderscript {
             const uchar4 *in = mIn + offset;
             for (size_t x = startX; x < endX; x++) {
                 auto v = *in;
-                uint8_t value;
+                double value;
                 if (mChannel == 0) {
                     value = v.r;
                 } else if (mChannel == 1) {
@@ -49,7 +49,7 @@ namespace renderscript {
                 } else if (mChannel == 3) {
                     value = v.a;
                 } else {
-                    value = (v.r + v.g + v.b) / 3;
+                    value = (v.r + v.g + v.b) / 3.0;
                 }
 
                 mTotals[threadIndex] += value;
@@ -60,11 +60,11 @@ namespace renderscript {
     }
 
     double AverageTask::collate() {
-        unsigned long long sum = 0;
+        double sum = 0;
         for (uint32_t t = 0; t < mThreadCount; t++) {
             sum += mTotals[t];
         }
-        return static_cast<double>(sum) / (mSizeX * mSizeY);
+        return sum / (mSizeX * mSizeY);
     }
 
     double RenderScriptToolkit::average(const uint8_t *input, size_t sizeX,
