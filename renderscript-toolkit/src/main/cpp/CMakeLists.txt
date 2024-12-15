@@ -91,6 +91,7 @@ add_library(# Sets the name of the library.
         MinMax.cpp
         Average.cpp
         StandardDeviation.cpp
+        Moment.cpp
         ${ASM_SOURCES})
 
 # Searches for a specified prebuilt library and stores the path as a

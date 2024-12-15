@@ -589,4 +589,27 @@ Java_com_google_android_renderscript_Toolkit_nativeStandardDeviationBitmap(
                                       restrict.get());
 }
 
+extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_nativeMoment(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jbyteArray input_array,
+        jfloatArray output_array, jint size_x,
+        jint size_y, jbyte channel, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    ByteArrayGuard input{env, input_array};
+    FloatArrayGuard output{env, output_array};
+
+    toolkit->moment(input.get(), output.get(), size_x, size_y, channel, restrict.get());
+}
+
+extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_nativeMomentBitmap(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jobject input_bitmap,
+        jfloatArray output_array, jbyte channel, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    BitmapGuard input{env, input_bitmap};
+    FloatArrayGuard output{env, output_array};
+
+    toolkit->moment(input.get(), output.get(), input.width(), input.height(), channel,
+                    restrict.get());
+}
 

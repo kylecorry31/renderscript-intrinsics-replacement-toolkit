@@ -1270,6 +1270,53 @@ object Toolkit {
         )
     }
 
+    @JvmOverloads
+    fun moment(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): FloatArray {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName minMax. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("minMax", sizeX, sizeY, restriction)
+
+        val outputArray = FloatArray(2)
+        nativeMoment(
+            nativeHandle,
+            inputArray,
+            outputArray,
+            sizeX,
+            sizeY,
+            channel,
+            restriction
+        )
+        return outputArray
+    }
+
+    @JvmOverloads
+    fun moment(
+        inputBitmap: Bitmap,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): FloatArray {
+        validateBitmap("minMax", inputBitmap)
+        validateRestriction("minMax", inputBitmap, restriction)
+
+        val outputArray = FloatArray(2)
+        nativeMomentBitmap(
+            nativeHandle,
+            inputBitmap,
+            outputArray,
+            channel,
+            restriction
+        )
+        return outputArray
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1564,6 +1611,24 @@ object Toolkit {
         average: Double,
         restriction: Range2d?
     ): Double
+
+    private external fun nativeMoment(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        outputArray: FloatArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeMomentBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        outputArray: FloatArray,
+        channel: Byte,
+        restriction: Range2d?
+    )
 }
 
 
