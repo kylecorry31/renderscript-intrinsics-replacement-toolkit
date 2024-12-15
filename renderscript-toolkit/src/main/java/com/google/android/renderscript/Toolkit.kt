@@ -1498,7 +1498,7 @@ internal fun validateBitmap(
 }
 
 internal fun createCompatibleBitmap(inputBitmap: Bitmap) =
-    Bitmap.createBitmap(inputBitmap.width, inputBitmap.height, inputBitmap.config)
+    Bitmap.createBitmap(inputBitmap.width, inputBitmap.height, inputBitmap.config ?: Bitmap.Config.ARGB_8888)
 
 internal fun validateHistogramDotCoefficients(
     coefficients: FloatArray?,

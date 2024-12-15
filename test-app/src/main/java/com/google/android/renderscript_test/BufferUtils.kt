@@ -360,6 +360,7 @@ fun randomYuvArray(seed: Long, sizeX: Int, sizeY: Int, format: YuvFormat): ByteA
             val strideX = roundUpTo16(sizeX)
             totalSize = strideX * sizeY + roundUpTo16(strideX / 2) * halfSizeY * 2
         }
+
         YuvFormat.NV21 -> totalSize = sizeX * sizeY + halfSizeX * halfSizeY * 2
         else -> require(false) { "Unknown YUV format $format" }
     }
@@ -480,7 +481,11 @@ fun vectorSizeOfBitmap(bitmap: Bitmap): Int {
 }
 
 fun duplicateBitmap(original: Bitmap): Bitmap {
-    val copy = Bitmap.createBitmap(original.width, original.height, original.config)
+    val copy = Bitmap.createBitmap(
+        original.width,
+        original.height,
+        original.config ?: Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(copy)
     canvas.drawBitmap(original, 0f, 0f, null)
     return copy
