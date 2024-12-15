@@ -488,6 +488,20 @@ namespace renderscript {
                     size_t sizeY, uint8_t channel, const Restriction *restriction);
 
         /**
+         * Find the standard deviation of an image.
+         * @param input The buffer of the image.
+         * @param sizeX The width of both buffers, as a number of 4 byte cells.
+         * @param sizeY The height of both buffers, as a number of 4 byte cells.
+         * @param channel The channel to aggregate (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
+         * @param average The average value of the image.
+         * @param restriction When not null, restricts the operation to a 2D range of pixels.
+         * @return The standard deviation of the image.
+         */
+        double standardDeviation(const uint8_t *input, size_t sizeX,
+                                                      size_t sizeY, uint8_t channel, double average,
+                                                      const Restriction *restriction);
+
+        /**
          * Transform an image using a 3D look up table
          *
          * Transforms an image, converting RGB to RGBA by using a 3D lookup table. The incoming R, G,

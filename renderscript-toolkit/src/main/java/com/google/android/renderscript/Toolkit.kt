@@ -1225,6 +1225,51 @@ object Toolkit {
         )
     }
 
+    @JvmOverloads
+    fun standardDeviation(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        average: Double? = null,
+        restriction: Range2d? = null
+    ): Double {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName standardDeviation. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("standardDeviation", sizeX, sizeY, restriction)
+
+        return nativeStandardDeviation(
+            nativeHandle,
+            inputArray,
+            sizeX,
+            sizeY,
+            channel,
+            average ?: average(inputArray, sizeX, sizeY, channel, restriction),
+            restriction
+        )
+    }
+
+    @JvmOverloads
+    fun standardDeviation(
+        inputBitmap: Bitmap,
+        channel: Byte,
+        average: Double? = null,
+        restriction: Range2d? = null
+    ): Double {
+        validateBitmap("standardDeviation", inputBitmap)
+        validateRestriction("standardDeviation", inputBitmap, restriction)
+
+        return nativeStandardDeviationBitmap(
+            nativeHandle,
+            inputBitmap,
+            channel,
+            average ?: average(inputBitmap, channel, restriction),
+            restriction
+        )
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1501,7 +1546,26 @@ object Toolkit {
         channel: Byte,
         restriction: Range2d?
     ): Double
+
+    private external fun nativeStandardDeviation(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        average: Double,
+        restriction: Range2d?
+    ): Double
+
+    private external fun nativeStandardDeviationBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        channel: Byte,
+        average: Double,
+        restriction: Range2d?
+    ): Double
 }
+
 
 /**
  * Determines how a source buffer is blended into a destination buffer.

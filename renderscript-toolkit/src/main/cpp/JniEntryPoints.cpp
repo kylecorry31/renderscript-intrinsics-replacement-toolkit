@@ -565,4 +565,28 @@ Java_com_google_android_renderscript_Toolkit_nativeAverageBitmap(
     return toolkit->average(input.get(), input.width(), input.height(), channel, restrict.get());
 }
 
+extern "C" JNIEXPORT jdouble JNICALL
+Java_com_google_android_renderscript_Toolkit_nativeStandardDeviation(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jbyteArray input_array, jint size_x,
+        jint size_y, jbyte channel, jdouble average, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    ByteArrayGuard input{env, input_array};
+
+    return toolkit->standardDeviation(input.get(), size_x, size_y, channel, average,
+                                      restrict.get());
+}
+
+extern "C" JNIEXPORT jdouble JNICALL
+Java_com_google_android_renderscript_Toolkit_nativeStandardDeviationBitmap(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jobject input_bitmap,
+        jbyte channel, jdouble average, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    BitmapGuard input{env, input_bitmap};
+
+    return toolkit->standardDeviation(input.get(), input.width(), input.height(), channel, average,
+                                      restrict.get());
+}
+
 

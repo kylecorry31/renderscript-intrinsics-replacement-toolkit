@@ -38,29 +38,29 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Os -DNDEBUG")
 
 #TODO check that the definitions are all needed. Do they have impact outside of our code?
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL armv7-a)
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL armv7-a)
     add_definitions(-DARCH_ARM_USE_INTRINSICS -DARCH_ARM_HAVE_VFP)
     set(ASM_SOURCES
-        Blend_neon.S
-        Blur_neon.S
-        ColorMatrix_neon.S
-        Convolve_neon.S
-        Lut3d_neon.S
-        Resize_neon.S
-        YuvToRgb_neon.S)
-endif()
+            Blend_neon.S
+            Blur_neon.S
+            ColorMatrix_neon.S
+            Convolve_neon.S
+            Lut3d_neon.S
+            Resize_neon.S
+            YuvToRgb_neon.S)
+endif ()
 
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
     add_definitions(-DARCH_ARM_USE_INTRINSICS -DARCH_ARM64_USE_INTRINSICS -DARCH_ARM64_HAVE_NEON)
     set(ASM_SOURCES
-        Blend_advsimd.S
-        Blur_advsimd.S
-        ColorMatrix_advsimd.S
-        Convolve_advsimd.S
-        Lut3d_advsimd.S
-        Resize_advsimd.S
-        YuvToRgb_advsimd.S)
-endif()
+            Blend_advsimd.S
+            Blur_advsimd.S
+            ColorMatrix_advsimd.S
+            Convolve_advsimd.S
+            Lut3d_advsimd.S
+            Resize_advsimd.S
+            YuvToRgb_advsimd.S)
+endif ()
 # TODO add also for x86
 
 # Creates and names a library, sets it as either STATIC
@@ -69,28 +69,29 @@ endif()
 # Gradle automatically packages shared libraries with your APK.
 
 add_library(# Sets the name of the library.
-            renderscript-toolkit
-            # Sets the library as a shared library.
-            SHARED
-            # Provides a relative path to your source file(s).
-            Blend.cpp
-            Blur.cpp
-            ColorMatrix.cpp
-            Convolve3x3.cpp
-            Convolve5x5.cpp
-            Histogram.cpp
-            JniEntryPoints.cpp
-            Lut.cpp
-            Lut3d.cpp
-            RenderScriptToolkit.cpp
-            Resize.cpp
-            TaskProcessor.cpp
-            Utils.cpp
-            YuvToRgb.cpp
-            Threshold.cpp
-            MinMax.cpp
-            Average.cpp
-            ${ASM_SOURCES})
+        renderscript-toolkit
+        # Sets the library as a shared library.
+        SHARED
+        # Provides a relative path to your source file(s).
+        Blend.cpp
+        Blur.cpp
+        ColorMatrix.cpp
+        Convolve3x3.cpp
+        Convolve5x5.cpp
+        Histogram.cpp
+        JniEntryPoints.cpp
+        Lut.cpp
+        Lut3d.cpp
+        RenderScriptToolkit.cpp
+        Resize.cpp
+        TaskProcessor.cpp
+        Utils.cpp
+        YuvToRgb.cpp
+        Threshold.cpp
+        MinMax.cpp
+        Average.cpp
+        StandardDeviation.cpp
+        ${ASM_SOURCES})
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -99,23 +100,23 @@ add_library(# Sets the name of the library.
 # completing its build.
 
 find_library(# Sets the name of the path variable.
-             log-lib
-             # Specifies the name of the NDK library that
-             # you want CMake to locate.
-             log )
+        log-lib
+        # Specifies the name of the NDK library that
+        # you want CMake to locate.
+        log)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries(# Specifies the target library.
-                      renderscript-toolkit
+        renderscript-toolkit
 
-                      cpufeatures
-                      jnigraphics
-                      # Links the target library to the log library
-                      # included in the NDK.
-                      ${log-lib} )
+        cpufeatures
+        jnigraphics
+        # Links the target library to the log library
+        # included in the NDK.
+        ${log-lib})
 
 include(AndroidNdkModules)
 android_ndk_import_module_cpufeatures()
