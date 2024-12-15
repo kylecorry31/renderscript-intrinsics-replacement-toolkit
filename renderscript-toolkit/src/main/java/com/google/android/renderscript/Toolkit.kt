@@ -1138,6 +1138,53 @@ object Toolkit {
         return outputBitmap
     }
 
+    @JvmOverloads
+    fun minMax(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): ByteArray {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName minMax. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("minMax", sizeX, sizeY, restriction)
+
+        val outputArray = ByteArray(2)
+        nativeMinMax(
+            nativeHandle,
+            inputArray,
+            outputArray,
+            sizeX,
+            sizeY,
+            channel,
+            restriction
+        )
+        return outputArray
+    }
+
+    @JvmOverloads
+    fun minMax(
+        inputBitmap: Bitmap,
+        channel: Byte,
+        restriction: Range2d? = null
+    ): ByteArray {
+        validateBitmap("minMax", inputBitmap)
+        validateRestriction("minMax", inputBitmap, restriction)
+
+        val outputArray = ByteArray(2)
+        nativeMinMaxBitmap(
+            nativeHandle,
+            inputBitmap,
+            outputArray,
+            channel,
+            restriction
+        )
+        return outputArray
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1378,6 +1425,24 @@ object Toolkit {
         outputBitmap: Bitmap,
         threshold: Byte,
         binary: Boolean,
+        restriction: Range2d?
+    )
+
+    private external fun nativeMinMax(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        outputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeMinMaxBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        outputArray: ByteArray,
+        channel: Byte,
         restriction: Range2d?
     )
 }
