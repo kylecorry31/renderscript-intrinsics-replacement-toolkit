@@ -70,11 +70,16 @@ namespace renderscript {
     }
 
     void MinMaxTask::collate(uint8_t *out) {
-        int min = 255;
-        int max = 0;
+        uint8_t min = 255;
+        uint8_t max = 0;
         for (uint32_t t = 0; t < mThreadCount; t++) {
-            min = std::min(min, mTotals[t * 2]);
-            max = std::max(max, mTotals[t * 2 + 1]);
+            if (mTotals[t * 2] < min) {
+                min = mTotals[t * 2];
+            }
+
+            if (mTotals[t * 2 + 1] > max) {
+                max = mTotals[t * 2 + 1];
+            }
         }
         out[0] = min;
         out[1] = max;
