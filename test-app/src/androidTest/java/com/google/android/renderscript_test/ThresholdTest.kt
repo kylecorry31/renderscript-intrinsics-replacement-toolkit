@@ -54,6 +54,10 @@ class ThresholdTest {
         )
         bitmapEquals(large, Toolkit.threshold(large, 180f, false, channel = 4))
         bitmapEquals(largeYellow, Toolkit.threshold(large, 200f, false, channel = 0))
+
+        val inPlaceTwoValues = Toolkit.threshold(twoValues, 4f, true, channel = 4, inPlace = true)
+        bitmapEquals(expectedTwoValuesBinary, inPlaceTwoValues)
+        assertEquals(inPlaceTwoValues, twoValues)
     }
 
     private fun bitmapEquals(bitmap1: Bitmap, bitmap2: Bitmap) {

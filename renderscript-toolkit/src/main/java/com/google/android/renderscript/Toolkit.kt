@@ -1123,12 +1123,13 @@ object Toolkit {
         threshold: Float,
         binary: Boolean,
         channel: Byte,
-        restriction: Range2d? = null
+        restriction: Range2d? = null,
+        inPlace: Boolean = false
     ): Bitmap {
         validateBitmap("threshold", inputBitmap)
         validateRestriction("threshold", inputBitmap, restriction)
 
-        val outputBitmap = createCompatibleBitmap(inputBitmap)
+        val outputBitmap = createCompatibleBitmap(inputBitmap, inPlace)
         nativeThresholdBitmap(
             nativeHandle,
             inputBitmap,
@@ -1824,12 +1825,15 @@ internal fun validateBitmap(
     }
 }
 
-internal fun createCompatibleBitmap(inputBitmap: Bitmap) =
+internal fun createCompatibleBitmap(inputBitmap: Bitmap, inPlace: Boolean = false) = if (inPlace) {
+    inputBitmap
+} else {
     Bitmap.createBitmap(
         inputBitmap.width,
         inputBitmap.height,
         inputBitmap.config ?: Bitmap.Config.ARGB_8888
     )
+}
 
 internal fun validateHistogramDotCoefficients(
     coefficients: FloatArray?,
