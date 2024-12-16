@@ -472,7 +472,7 @@ namespace renderscript {
          * @param channel The channel to aggregate (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
          * @param restriction When not null, restricts the operation to a 2D range of pixels.
          */
-        void minMax(const uint8_t *input, uint8_t *output, size_t sizeX,
+        void minMax(const uint8_t *input, float *output, size_t sizeX,
                     size_t sizeY, uint8_t channel, const Restriction *restriction);
 
         /**

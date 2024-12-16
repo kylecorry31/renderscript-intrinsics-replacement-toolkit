@@ -12,7 +12,7 @@ namespace renderscript {
         const uchar4 *mIn;
         const uint8_t mChannel;
         const uint32_t mThreadCount;
-        std::vector<int> mTotals;
+        std::vector<float> mTotals;
 
         // Process a 2D tile of the overall work. threadIndex identifies which thread does the work.
         void processData(int threadIndex, size_t startX, size_t startY, size_t endX,
@@ -27,20 +27,20 @@ namespace renderscript {
                   mThreadCount{threadCount},
                   mTotals(2 * threadCount) {}
 
-        void collate(uint8_t *out);
+        void collate(float *out);
     };
 
     void
     MinMaxTask::processData(int threadIndex, size_t startX, size_t startY, size_t endX,
                             size_t endY) {
-        uint8_t min = 255;
-        uint8_t max = 0;
+        mTotals[threadIndex * 2] = 255;
+        mTotals[threadIndex * 2 + 1] = 0;
         for (size_t y = startY; y < endY; y++) {
             size_t offset = mSizeX * y + startX;
             const uchar4 *in = mIn + offset;
             for (size_t x = startX; x < endX; x++) {
                 auto v = *in;
-                uint8_t value;
+                float value;
                 if (mChannel == 0) {
                     value = v.r;
                 } else if (mChannel == 1) {
@@ -50,28 +50,25 @@ namespace renderscript {
                 } else if (mChannel == 3) {
                     value = v.a;
                 } else {
-                    value = (v.r + v.g + v.b) / 3;
+                    value = (float) ((v.r + v.g + v.b) / 3.0);
                 }
 
-                if (value < min) {
-                    min = value;
+                if (value < mTotals[threadIndex * 2]) {
+                    mTotals[threadIndex * 2] = value;
                 }
 
-                if (value > max) {
-                    max = value;
+                if (value > mTotals[threadIndex * 2 + 1]) {
+                    mTotals[threadIndex * 2 + 1] = value;
                 }
 
                 in++;
             }
         }
-
-        mTotals[threadIndex * 2] = min;
-        mTotals[threadIndex * 2 + 1] = max;
     }
 
-    void MinMaxTask::collate(uint8_t *out) {
-        uint8_t min = 255;
-        uint8_t max = 0;
+    void MinMaxTask::collate(float *out) {
+        float min = 255;
+        float max = 0;
         for (uint32_t t = 0; t < mThreadCount; t++) {
             if (mTotals[t * 2] < min) {
                 min = mTotals[t * 2];
@@ -85,7 +82,7 @@ namespace renderscript {
         out[1] = max;
     }
 
-    void RenderScriptToolkit::minMax(const uint8_t *input, uint8_t *output, size_t sizeX,
+    void RenderScriptToolkit::minMax(const uint8_t *input, float *output, size_t sizeX,
                                      size_t sizeY, uint8_t channel,
                                      const Restriction *restriction) {
 #ifdef ANDROID_RENDERSCRIPT_TOOLKIT_VALIDATE
