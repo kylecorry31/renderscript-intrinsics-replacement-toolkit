@@ -25,7 +25,12 @@ namespace renderscript {
                   mIn{reinterpret_cast<const uchar4 *>(input)},
                   mChannel{channel},
                   mThreadCount{threadCount},
-                  mTotals(2 * threadCount) {}
+                  mTotals(2 * threadCount) {
+            for (uint32_t t = 0; t < mThreadCount; t++) {
+                mTotals[t * 2] = 255;
+                mTotals[t * 2 + 1] = 0;
+            }
+        }
 
         void collate(float *out);
     };
@@ -33,8 +38,6 @@ namespace renderscript {
     void
     MinMaxTask::processData(int threadIndex, size_t startX, size_t startY, size_t endX,
                             size_t endY) {
-        mTotals[threadIndex * 2] = 255;
-        mTotals[threadIndex * 2 + 1] = 0;
         for (size_t y = startY; y < endY; y++) {
             size_t offset = mSizeX * y + startX;
             const uchar4 *in = mIn + offset;

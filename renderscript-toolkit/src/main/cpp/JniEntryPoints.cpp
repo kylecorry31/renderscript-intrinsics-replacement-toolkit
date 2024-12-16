@@ -495,29 +495,30 @@ extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_n
 
 extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_nativeThreshold(
         JNIEnv *env, jobject /*thiz*/, jlong native_handle, jbyteArray input_array,
-        jbyteArray output_array, jint size_x, jint size_y, jbyte threshold,
-        jboolean binary, jobject restriction) {
+        jbyteArray output_array, jint size_x, jint size_y, jfloat threshold,
+        jboolean binary, jbyte channel, jobject restriction) {
     RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
     RestrictionParameter restrict{env, restriction};
 
     ByteArrayGuard input{env, input_array};
     ByteArrayGuard output{env, output_array};
 
-    toolkit->threshold(input.get(), output.get(), size_x, size_y, threshold, binary,
+    toolkit->threshold(input.get(), output.get(), size_x, size_y, threshold, binary, channel,
                        restrict.get());
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_google_android_renderscript_Toolkit_nativeThresholdBitmap(
         JNIEnv *env, jobject /*thiz*/, jlong native_handle, jobject input_bitmap,
-        jobject output_bitmap, jbyte threshold, jboolean binary, jobject restriction) {
+        jobject output_bitmap, jfloat threshold,
+        jboolean binary, jbyte channel, jobject restriction) {
     RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
     RestrictionParameter restrict{env, restriction};
     BitmapGuard input{env, input_bitmap};
     BitmapGuard output{env, output_bitmap};
 
     toolkit->threshold(input.get(), output.get(), input.width(), input.height(), threshold, binary,
-                       restrict.get());
+                       channel, restrict.get());
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_nativeMinMax(

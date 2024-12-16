@@ -1091,8 +1091,9 @@ object Toolkit {
         inputArray: ByteArray,
         sizeX: Int,
         sizeY: Int,
-        threshold: Byte,
+        threshold: Float,
         binary: Boolean,
+        channel: Byte,
         restriction: Range2d? = null
     ): ByteArray {
         require(inputArray.size >= sizeX * sizeY * 4) {
@@ -1110,6 +1111,7 @@ object Toolkit {
             sizeY,
             threshold,
             binary,
+            channel,
             restriction
         )
         return outputArray
@@ -1118,8 +1120,9 @@ object Toolkit {
     @JvmOverloads
     fun threshold(
         inputBitmap: Bitmap,
-        threshold: Byte,
+        threshold: Float,
         binary: Boolean,
+        channel: Byte,
         restriction: Range2d? = null
     ): Bitmap {
         validateBitmap("threshold", inputBitmap)
@@ -1132,6 +1135,7 @@ object Toolkit {
             outputBitmap,
             threshold,
             binary,
+            channel,
             restriction
         )
         return outputBitmap
@@ -1546,8 +1550,9 @@ object Toolkit {
         outputArray: ByteArray,
         sizeX: Int,
         sizeY: Int,
-        threshold: Byte,
+        threshold: Float,
         binary: Boolean,
+        channel: Byte,
         restriction: Range2d?
     )
 
@@ -1555,8 +1560,9 @@ object Toolkit {
         nativeHandle: Long,
         inputBitmap: Bitmap,
         outputBitmap: Bitmap,
-        threshold: Byte,
+        threshold: Float,
         binary: Boolean,
+        channel: Byte,
         restriction: Range2d?
     )
 

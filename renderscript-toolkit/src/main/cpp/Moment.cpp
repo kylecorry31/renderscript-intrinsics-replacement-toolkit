@@ -21,7 +21,7 @@ namespace renderscript {
     public:
         MomentTask(const uint8_t *input, size_t sizeX, size_t sizeY, uint8_t channel,
                    uint32_t threadCount, const Restriction *restriction)
-                : Task{sizeX, sizeY, 4, true, restriction},
+                : Task{sizeX, sizeY, 4, false, restriction},
                   mIn{reinterpret_cast<const uchar4 *>(input)},
                   mChannel{channel},
                   mThreadCount{threadCount},
@@ -36,6 +36,7 @@ namespace renderscript {
         for (size_t y = startY; y < endY; y++) {
             size_t offset = mSizeX * y + startX;
             const uchar4 *in = mIn + offset;
+
             for (size_t x = startX; x < endX; x++) {
                 auto v = *in;
                 double value;

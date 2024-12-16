@@ -27,7 +27,8 @@ namespace renderscript {
     class ThresholdTask : public Task {
         const uchar4 *mIn;
         uchar4 *mOut;
-        const uchar mThreshold;
+        float mThreshold;
+        uint8_t mChannel;
         bool mBinary;
 
         // Process a 2D tile of the overall work. threadIndex identifies which thread does the work.
@@ -36,12 +37,13 @@ namespace renderscript {
 
     public:
         ThresholdTask(const uint8_t *input, uint8_t *output, size_t sizeX, size_t sizeY,
-                      const uint8_t threshold, bool binary,
+                      float threshold, bool binary, uint8_t channel,
                       const Restriction *restriction)
                 : Task{sizeX, sizeY, 4, true, restriction},
                   mIn{reinterpret_cast<const uchar4 *>(input)},
                   mOut{reinterpret_cast<uchar4 *>(output)},
                   mThreshold{threshold},
+                  mChannel{channel},
                   mBinary{binary} {}
     };
 
@@ -54,13 +56,28 @@ namespace renderscript {
             uchar4 *out = mOut + offset;
             for (size_t x = startX; x < endX; x++) {
                 auto v = *in;
-                auto average = (v.x + v.y + v.z) / 3;
-                if (average > mThreshold && !mBinary){
-                    *out = uchar4{v.x, v.y, v.z, v.w};
-                } else if (average > mThreshold && mBinary){
-                    *out = uchar4{255, 255, 255, v.w};
+                double value;
+                if (mChannel == 0) {
+                    value = v.r;
+                } else if (mChannel == 1) {
+                    value = v.g;
+                } else if (mChannel == 2) {
+                    value = v.b;
+                } else if (mChannel == 3) {
+                    value = v.a;
                 } else {
-                    *out = uchar4{0, 0, 0, v.w};
+                    value = (v.r + v.g + v.b) / 3.0;
+                }
+
+                if (value > mThreshold && !mBinary) {
+                    *out = uchar4{v.r, v.g, v.b, v.a};
+                } else if (mChannel < 0 || mChannel > 3) {
+                    uchar replacement = value > mThreshold ? 255 : 0;
+                    *out = uchar4{replacement, replacement, replacement, v.a};
+                } else {
+                    uchar replacement = value > mThreshold ? 255 : 0;
+                    *out = uchar4{v.r, v.g, v.b, v.a};
+                    (*out)[mChannel] = replacement;
                 }
                 in++;
                 out++;
@@ -70,7 +87,7 @@ namespace renderscript {
 
     void RenderScriptToolkit::threshold(const uint8_t *input, uint8_t *output, size_t sizeX,
                                         size_t sizeY,
-                                        const uint8_t threshold, bool binary,
+                                        float threshold, bool binary, uint8_t channel,
                                         const Restriction *restriction) {
 #ifdef ANDROID_RENDERSCRIPT_TOOLKIT_VALIDATE
         if (!validRestriction(LOG_TAG, sizeX, sizeY, restriction)) {
@@ -78,7 +95,7 @@ namespace renderscript {
         }
 #endif
 
-        ThresholdTask task(input, output, sizeX, sizeY, threshold, binary, restriction);
+        ThresholdTask task(input, output, sizeX, sizeY, threshold, binary, channel, restriction);
         processor->doTask(&task);
     }
 

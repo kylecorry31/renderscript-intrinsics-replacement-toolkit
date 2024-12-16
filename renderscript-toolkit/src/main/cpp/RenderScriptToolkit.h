@@ -457,10 +457,11 @@ namespace renderscript {
          * @param sizeY The height of both buffers, as a number of 4 byte cells.
          * @param threshold The value used to determine if a pixel is black or white.
          * @param binary If true, the output will be 0 or 255. Otherwise, the pixel will remain the same.
+         * @param channel The channel to threshold (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
          * @param restriction When not null, restricts the operation to a 2D range of pixels.
          */
         void threshold(const uint8_t *input, uint8_t *output, size_t sizeX, size_t sizeY,
-                       uint8_t threshold, bool binary, const Restriction *restriction);
+                       float threshold, bool binary, uint8_t channel, const Restriction *restriction);
 
 
         /**
