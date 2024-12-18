@@ -17,6 +17,7 @@
 package com.google.android.renderscript
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 
 // This string is used for error messages.
 private const val externalName = "RenderScript Toolkit"
@@ -1322,6 +1323,89 @@ object Toolkit {
         return outputArray
     }
 
+    @JvmOverloads
+    fun findBlobs(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        channel: Byte,
+        threshold: Float,
+        maxBlobs: Int,
+        restriction: Range2d? = null
+    ): List<Rect> {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName findBlobs. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("findBlobs", sizeX, sizeY, restriction)
+
+        val outputArray = IntArray(maxBlobs * 4)
+
+        nativeFindBlobs(
+            nativeHandle,
+            inputArray,
+            outputArray,
+            maxBlobs,
+            sizeX,
+            sizeY,
+            threshold,
+            channel,
+            restriction
+        )
+
+        val blobs = mutableListOf<Rect>()
+        for (i in 0 until maxBlobs) {
+            val left = outputArray[i * 4]
+            val top = outputArray[i * 4 + 1]
+            val right = outputArray[i * 4 + 2]
+            val bottom = outputArray[i * 4 + 3]
+            if (left == 0 && top == 0 && right == 0 && bottom == 0) {
+                break
+            }
+            blobs.add(Rect(left, top, right, bottom))
+        }
+
+        return blobs
+    }
+
+    @JvmOverloads
+    fun findBlobs(
+        inputBitmap: Bitmap,
+        channel: Byte,
+        threshold: Float,
+        maxBlobs: Int,
+        restriction: Range2d? = null
+    ): List<Rect> {
+        validateBitmap("findBlobs", inputBitmap)
+        validateRestriction("findBlobs", inputBitmap, restriction)
+
+        val outputArray = IntArray(maxBlobs * 4)
+
+        nativeFindBlobsBitmap(
+            nativeHandle,
+            inputBitmap,
+            outputArray,
+            maxBlobs,
+            threshold,
+            channel,
+            restriction
+        )
+
+        val blobs = mutableListOf<Rect>()
+        for (i in 0 until maxBlobs) {
+            val left = outputArray[i * 4]
+            val top = outputArray[i * 4 + 1]
+            val right = outputArray[i * 4 + 2]
+            val bottom = outputArray[i * 4 + 3]
+            if (left == 0 && top == 0 && right == 0 && bottom == 0) {
+                break
+            }
+            blobs.add(Rect(left, top, right, bottom))
+        }
+
+        return blobs
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1633,6 +1717,28 @@ object Toolkit {
         nativeHandle: Long,
         inputBitmap: Bitmap,
         outputArray: FloatArray,
+        channel: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeFindBlobs(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        outputArray: IntArray,
+        maxBlobs: Int,
+        sizeX: Int,
+        sizeY: Int,
+        threshold: Float,
+        channel: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeFindBlobsBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        outputArray: IntArray,
+        maxBlobs: Int,
+        threshold: Float,
         channel: Byte,
         restriction: Range2d?
     )

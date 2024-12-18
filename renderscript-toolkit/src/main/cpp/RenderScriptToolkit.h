@@ -461,7 +461,8 @@ namespace renderscript {
          * @param restriction When not null, restricts the operation to a 2D range of pixels.
          */
         void threshold(const uint8_t *input, uint8_t *output, size_t sizeX, size_t sizeY,
-                       float threshold, bool binary, uint8_t channel, const Restriction *restriction);
+                       float threshold, bool binary, uint8_t channel,
+                       const Restriction *restriction);
 
 
         /**
@@ -486,7 +487,7 @@ namespace renderscript {
          * @return The average value of the image.
          */
         double average(const uint8_t *input, size_t sizeX,
-                    size_t sizeY, uint8_t channel, const Restriction *restriction);
+                       size_t sizeY, uint8_t channel, const Restriction *restriction);
 
         /**
          * Find the standard deviation of an image.
@@ -499,8 +500,8 @@ namespace renderscript {
          * @return The standard deviation of the image.
          */
         double standardDeviation(const uint8_t *input, size_t sizeX,
-                                                      size_t sizeY, uint8_t channel, double average,
-                                                      const Restriction *restriction);
+                                 size_t sizeY, uint8_t channel, double average,
+                                 const Restriction *restriction);
 
         /**
          * Find the moment of an image.
@@ -512,8 +513,23 @@ namespace renderscript {
          * @param restriction When not null, restricts the operation to a 2D range of pixels.
          */
         void moment(const uint8_t *input, float *output, size_t sizeX,
-                                         size_t sizeY, uint8_t channel,
-                                         const Restriction *restriction);
+                    size_t sizeY, uint8_t channel,
+                    const Restriction *restriction);
+
+        /**
+         * Find blobs in an image.
+         * @param input The buffer of the image.
+         * @param output The buffer that receives the blobs (must be 4 times the max number of blobs).
+         * @param maxBlobs The maximum number of blobs to find.
+         * @param sizeX The width of both buffers, as a number of 4 byte cells.
+         * @param sizeY The height of both buffers, as a number of 4 byte cells.
+         * @param threshold The value used to determine if a pixel is black or white.
+         * @param channel The channel to threshold (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
+         * @param restriction When not null, restricts the operation to a 2D range of pixels.
+         */
+        void findBlobs(const uint8_t *input, int *output, size_t maxBlobs,
+                       size_t sizeX, size_t sizeY, float threshold,
+                       uint8_t channel, const Restriction *restriction);
 
         /**
          * Transform an image using a 3D look up table

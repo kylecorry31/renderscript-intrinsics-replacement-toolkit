@@ -614,3 +614,30 @@ extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_n
                     restrict.get());
 }
 
+extern "C" JNIEXPORT void JNICALL Java_com_google_android_renderscript_Toolkit_nativeFindBlobs(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jbyteArray input_array,
+        jintArray output_array, jint maxBlobs, jint size_x,
+        jint size_y, jfloat threshold, jbyte channel, jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    ByteArrayGuard input{env, input_array};
+    IntArrayGuard output{env, output_array};
+
+    toolkit->findBlobs(input.get(), output.get(), maxBlobs, size_x, size_y, threshold, channel,
+                       restrict.get());
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_google_android_renderscript_Toolkit_nativeFindBlobsBitmap(
+        JNIEnv *env, jobject /*thiz*/, jlong native_handle, jobject input_bitmap,
+        jintArray output_array, jint maxBlobs, jfloat threshold, jbyte channel,
+        jobject restriction) {
+    RenderScriptToolkit *toolkit = reinterpret_cast<RenderScriptToolkit *>(native_handle);
+    RestrictionParameter restrict{env, restriction};
+    BitmapGuard input{env, input_bitmap};
+    IntArrayGuard output{env, output_array};
+
+    toolkit->findBlobs(input.get(), output.get(), maxBlobs, input.width(), input.height(),
+                       threshold, channel,
+                       restrict.get());
+}
