@@ -1406,6 +1406,75 @@ object Toolkit {
         return blobs
     }
 
+    @JvmOverloads
+    fun glcm(
+        inputArray: ByteArray,
+        sizeX: Int,
+        sizeY: Int,
+        levels: Int,
+        channel: Byte,
+        symmetric: Boolean,
+        normalize: Boolean,
+        excludeTransparent: Boolean,
+        steps: IntArray,
+        restriction: Range2d? = null
+    ): FloatArray {
+        require(inputArray.size >= sizeX * sizeY * 4) {
+            "$externalName glcm. inputArray is too small for the given dimensions. " +
+                    "$sizeX*$sizeY*4 < ${inputArray.size}."
+        }
+        validateRestriction("glcm", sizeX, sizeY, restriction)
+
+        val outputArray = FloatArray(levels * levels)
+        nativeGlcm(
+            nativeHandle,
+            inputArray,
+            outputArray,
+            sizeX,
+            sizeY,
+            levels,
+            channel,
+            symmetric,
+            normalize,
+            excludeTransparent,
+            steps,
+            steps.size.toByte(),
+            restriction
+        )
+        return outputArray
+    }
+
+    @JvmOverloads
+    fun glcm(
+        inputBitmap: Bitmap,
+        levels: Int,
+        channel: Byte,
+        symmetric: Boolean,
+        normalize: Boolean,
+        excludeTransparent: Boolean,
+        steps: IntArray,
+        restriction: Range2d? = null
+    ): FloatArray {
+        validateBitmap("glcm", inputBitmap)
+        validateRestriction("glcm", inputBitmap, restriction)
+
+        val outputArray = FloatArray(levels * levels)
+        nativeGlcmBitmap(
+            nativeHandle,
+            inputBitmap,
+            outputArray,
+            levels,
+            channel,
+            symmetric,
+            normalize,
+            excludeTransparent,
+            steps,
+            steps.size.toByte(),
+            restriction
+        )
+        return outputArray
+    }
+
     private var nativeHandle: Long = 0
 
     init {
@@ -1740,6 +1809,36 @@ object Toolkit {
         maxBlobs: Int,
         threshold: Float,
         channel: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeGlcm(
+        nativeHandle: Long,
+        inputArray: ByteArray,
+        outputArray: FloatArray,
+        sizeX: Int,
+        sizeY: Int,
+        levels: Int,
+        channel: Byte,
+        symmetric: Boolean,
+        normalize: Boolean,
+        excludeTransparent: Boolean,
+        steps: IntArray,
+        stepCount: Byte,
+        restriction: Range2d?
+    )
+
+    private external fun nativeGlcmBitmap(
+        nativeHandle: Long,
+        inputBitmap: Bitmap,
+        outputArray: FloatArray,
+        levels: Int,
+        channel: Byte,
+        symmetric: Boolean,
+        normalize: Boolean,
+        excludeTransparent: Boolean,
+        steps: IntArray,
+        stepCount: Byte,
         restriction: Range2d?
     )
 }

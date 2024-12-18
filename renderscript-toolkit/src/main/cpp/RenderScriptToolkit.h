@@ -532,6 +532,27 @@ namespace renderscript {
                        uint8_t channel, const Restriction *restriction);
 
         /**
+         * Calculate the GLCM of an image.
+         * @param input The buffer of the image.
+         * @param output The buffer that receives the GLCM. Must be levels * levels in size.
+         * @param sizeX The width of both buffers, as a number of 4 byte cells.
+         * @param sizeY The height of both buffers, as a number of 4 byte cells.
+         * @param levels The number of levels to use in the GLCM.
+         * @param channel The channel to use (0 = R, 1 = G, 2 = B, 3 = A, anything else = Gray).
+         * @param symmetric Whether to make the GLCM symmetric.
+         * @param normalize Whether to normalize the GLCM.
+         * @param excludeTransparent Whether to exclude transparent pixels.
+         * @param steps The steps to use in the GLCM. Must be stepCount * 2 in size.
+         * @param stepCount The number of steps to use.
+         * @param restriction When not null, restricts the operation to a 2D range of pixels.
+         */
+        void glcm(const uint8_t *input, float *output,
+             size_t sizeX, size_t sizeY, size_t levels,
+             uint8_t channel, bool symmetric, bool normalize,
+             bool excludeTransparent, const int *steps, uint8_t stepCount,
+             const Restriction *restriction);
+
+        /**
          * Transform an image using a 3D look up table
          *
          * Transforms an image, converting RGB to RGBA by using a 3D lookup table. The incoming R, G,
